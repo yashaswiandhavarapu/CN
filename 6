@@ -1,0 +1,148 @@
+Write a c program to implement  GO BACK –N PROTOCAL
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX_SEQ 7     // Maximum sequence number (window size - 1)
+#define WINDOW_SIZE 4 // Window size
+#define TOTAL_FRAMES 10
+
+typedef enum { false, true } bool;
+
+typedef struct {
+    int seq_num;
+    char data[20];
+    bool acked;
+} Frame;
+
+Frame sender_window[WINDOW_SIZE];
+int base = 0;
+int next_seq_num = 0;
+
+void send_frame(Frame* frame) {
+    printf("Sending frame with seq_num %d: %s\n", frame->seq_num, frame->data);
+}
+
+bool receive_ack(int ack_num) {
+    // Simulate random ack loss/receive (70% chance success)
+    int r = rand() % 10;
+    if (r < 7) {
+        printf("ACK received for frame %d\n", ack_num);
+        return true;
+    } else {
+        printf("ACK lost for frame %d\n", ack_num);
+        return false;
+    }
+}
+
+void go_back_n_sender(char messages[TOTAL_FRAMES][20]) {
+    int i = 0;
+    while (base < TOTAL_FRAMES) {
+        // Send frames within window
+        while (next_seq_num < base + WINDOW_SIZE && next_seq_num < TOTAL_FRAMES) {
+            sender_window[next_seq_num % WINDOW_SIZE].seq_num = next_seq_num % (MAX_SEQ + 1);
+            strcpy(sender_window[next_seq_num % WINDOW_SIZE].data, messages[next_seq_num]);
+            sender_window[next_seq_num % WINDOW_SIZE].acked = false;
+            send_frame(&sender_window[next_seq_num % WINDOW_SIZE]);
+            next_seq_num++;
+        }
+
+        // Wait for the ACK of the base frame
+        if (receive_ack(base % (MAX_SEQ + 1))) {
+            sender_window[base % WINDOW_SIZE].acked = true;
+            base++;
+        } else {
+            // Timeout or lost ACK, resend all frames in window starting from base
+            printf("Timeout or lost ACK. Resending from frame %d\n", base);
+            next_seq_num = base;
+        }
+    }
+    printf("All frames sent and acknowledged.\n");
+}
+
+int main() {
+    srand(time(NULL));
+    char messages[TOTAL_FRAMES][20] = {
+        "Frame 0 data", "Frame 1 data", "Frame 2 data", "Frame 3 data", "Frame 4 data",
+        "Frame 5 data", "Frame 6 data", "Frame 7 data", "Frame 8 data", "Frame 9 data"
+    };
+
+    printf("Starting Go-Back-N Protocol simulation\n");
+    go_back_n_sender(messages);
+
+    return 0;
+}#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+#define MAX_SEQ 7     // Maximum sequence number (window size - 1)
+#define WINDOW_SIZE 4 // Window size
+#define TOTAL_FRAMES 10
+
+typedef enum { false, true } bool;
+
+typedef struct {
+    int seq_num;
+    char data[20];
+    bool acked;
+} Frame;
+
+Frame sender_window[WINDOW_SIZE];
+int base = 0;
+int next_seq_num = 0;
+
+void send_frame(Frame* frame) {
+    printf("Sending frame with seq_num %d: %s\n", frame->seq_num, frame->data);
+}
+
+bool receive_ack(int ack_num) {
+    // Simulate random ack loss/receive (70% chance success)
+    int r = rand() % 10;
+    if (r < 7) {
+        printf("ACK received for frame %d\n", ack_num);
+        return true;
+    } else {
+        printf("ACK lost for frame %d\n", ack_num);
+        return false;
+    }
+}
+
+void go_back_n_sender(char messages[TOTAL_FRAMES][20]) {
+    int i = 0;
+    while (base < TOTAL_FRAMES) {
+        // Send frames within window
+        while (next_seq_num < base + WINDOW_SIZE && next_seq_num < TOTAL_FRAMES) {
+            sender_window[next_seq_num % WINDOW_SIZE].seq_num = next_seq_num % (MAX_SEQ + 1);
+            strcpy(sender_window[next_seq_num % WINDOW_SIZE].data, messages[next_seq_num]);
+            sender_window[next_seq_num % WINDOW_SIZE].acked = false;
+            send_frame(&sender_window[next_seq_num % WINDOW_SIZE]);
+            next_seq_num++;
+        }
+
+        // Wait for the ACK of the base frame
+        if (receive_ack(base % (MAX_SEQ + 1))) {
+            sender_window[base % WINDOW_SIZE].acked = true;
+            base++;
+        } else {
+            // Timeout or lost ACK, resend all frames in window starting from base
+            printf("Timeout or lost ACK. Resending from frame %d\n", base);
+            next_seq_num = base;
+        }
+    }
+    printf("All frames sent and acknowledged.\n");
+}
+
+int main() {
+    srand(time(NULL));
+    char messages[TOTAL_FRAMES][20] = {
+        "Frame 0 data", "Frame 1 data", "Frame 2 data", "Frame 3 data", "Frame 4 data",
+        "Frame 5 data", "Frame 6 data", "Frame 7 data", "Frame 8 data", "Frame 9 data"
+    };
+
+    printf("Starting Go-Back-N Protocol simulation\n");
+    go_back_n_sender(messages);
+
+    return 0;
+}
