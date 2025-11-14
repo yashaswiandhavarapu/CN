@@ -1,0 +1,61 @@
+#include <stdio.h>
+#define INF 9999
+#define MAX 20
+
+int main() {
+    int cost[MAX][MAX], distance[MAX], visited[MAX];
+    int n, source;
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+
+    printf("Enter the cost adjacency matrix (use 9999 for INF):\n");
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    printf("Enter the source node: ");
+    scanf("%d", &source);
+
+    // Initialize
+    for (int i = 1; i <= n; i++) {
+        distance[i] = cost[source][i];
+        visited[i] = 0;
+    }
+
+    visited[source] = 1;
+    distance[source] = 0;
+
+    // Dijkstra's Algorithm
+    for (int count = 1; count < n; count++) {
+        int min = INF, nextNode = -1;
+
+        // Pick the unvisited node with smallest distance
+        for (int i = 1; i <= n; i++) {
+            if (!visited[i] && distance[i] < min) {
+                min = distance[i];
+                nextNode = i;
+            }
+        }
+
+        visited[nextNode] = 1;
+
+        // Update distances
+        for (int i = 1; i <= n; i++) {
+            if (!visited[i] &&
+                distance[nextNode] + cost[nextNode][i] < distance[i]) {
+                distance[i] = distance[nextNode] + cost[nextNode][i];
+            }
+        }
+    }
+
+    // Output
+    printf("\nShortest distances from source node %d:\n", source);
+    for (int i = 1; i <= n; i++) {
+        printf("%d → %d : %d\n", source, i, distance[i]);
+    }
+
+    return 0;
+}
