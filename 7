@@ -1,0 +1,52 @@
+#include <stdio.h>
+
+int main() {
+    int totalFrames, windowSize, lostFrame;
+
+    printf("Enter total number of frames to send: ");
+    scanf("%d", &totalFrames);
+
+    printf("Enter window size: ");
+    scanf("%d", &windowSize);
+
+    printf("Enter a frame number to simulate loss (0 for no loss): ");
+    scanf("%d", &lostFrame);
+
+    int sentUpto = 1;
+
+    while (sentUpto <= totalFrames) {
+
+        printf("\nSender: Sending window frames: ");
+        for (int i = sentUpto; i < sentUpto + windowSize && i <= totalFrames; i++) {
+            printf("%d ", i);
+        }
+
+        printf("\nReceiver Side:");
+        int received[50] = {0};
+
+        for (int i = sentUpto; i < sentUpto + windowSize && i <= totalFrames; i++) {
+            if (i == lostFrame) {
+                printf("\n❌ Frame %d lost! No ACK.", i);
+                received[i] = 0;
+            } else {
+                printf("\n✔ Frame %d received. ACK sent.", i);
+                received[i] = 1;
+            }
+        }
+
+        // Selective retransmission
+        for (int i = sentUpto; i < sentUpto + windowSize && i <= totalFrames; i++) {
+            if (received[i] == 0) {
+                printf("\n\n🔁 Selective Repeat: Resending ONLY frame %d", i);
+                printf("\n✔ Frame %d received. ACK sent.", i);
+                received[i] = 1;
+            }
+        }
+
+        printf("\n\nAll frames in this window are acknowledged.");
+        sentUpto += windowSize;
+    }
+
+    printf("\n\nAll frames sent successfully using Selective Repeat!\n");
+    return 0;
+}
