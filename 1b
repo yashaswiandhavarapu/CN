@@ -1,0 +1,30 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char data[100], stuffed[200] = "";
+    int count = 0;
+
+    printf("Enter bit stream (0s and 1s only): ");
+    scanf("%s", data);
+
+    for (int i = 0; i < strlen(data); i++) {
+        if (data[i] == '1') {
+            stuffed[strlen(stuffed)] = '1';
+            count++;
+        } else {
+            stuffed[strlen(stuffed)] = '0';
+            count = 0;
+        }
+
+        // After five consecutive 1s, stuff a 0
+        if (count == 5) {
+            stuffed[strlen(stuffed)] = '0';
+            count = 0;
+        }
+    }
+
+    printf("\nBit Stuffed Output: %s\n", stuffed);
+
+    return 0;
+}
