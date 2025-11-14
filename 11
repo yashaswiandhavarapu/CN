@@ -1,0 +1,58 @@
+#include <stdio.h>
+
+#define INF 9999
+#define MAX 10
+
+int main() {
+    int cost[MAX][MAX], distance[MAX][MAX], nextHop[MAX][MAX];
+    int nodes;
+
+    printf("Enter number of nodes: ");
+    scanf("%d", &nodes);
+
+    printf("Enter the cost adjacency matrix (use 9999 for no link):\n");
+    for (int i = 0; i < nodes; i++) {
+        for (int j = 0; j < nodes; j++) {
+            scanf("%d", &cost[i][j]);
+            distance[i][j] = cost[i][j];
+
+            if (i == j)
+                nextHop[i][j] = i;       // same node
+            else if (cost[i][j] != INF)
+                nextHop[i][j] = j;       // direct neighbor
+            else
+                nextHop[i][j] = -1;      // unknown
+        }
+    }
+
+    // Distance Vector Algorithm
+    int updated;
+    do {
+        updated = 0;
+
+        for (int i = 0; i < nodes; i++) {
+            for (int j = 0; j < nodes; j++) {
+                for (int k = 0; k < nodes; k++) {
+
+                    if (distance[i][k] + cost[k][j] < distance[i][j]) {
+                        distance[i][j] = distance[i][k] + cost[k][j];
+                        nextHop[i][j] = nextHop[i][k];
+                        updated = 1;
+                    }
+                }
+            }
+        }
+    } while (updated);
+
+    // Print routing table for each node
+    for (int i = 0; i < nodes; i++) {
+        printf("\nRouting table for Node %d:\n", i);
+        printf("Destination\tNextHop\tDistance\n");
+
+        for (int j = 0; j < nodes; j++) {
+            printf("     %d\t\t   %d\t    %d\n", j, nextHop[i][j], distance[i][j]);
+        }
+    }
+
+    return 0;
+}
