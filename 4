@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <math.h>
+
+int main() {
+    int data[20], hcode[20], r = 0, m, i, j, k, pos, parity, error_pos = 0;
+
+    printf("Enter number of data bits: ");
+    scanf("%d", &m);
+
+    printf("Enter data bits (LSB first): ");
+    for (i = 1; i <= m; i++)
+        scanf("%d", &data[i]);
+
+    // Calculate number of redundant bits (r)
+    while (pow(2, r) < (m + r + 1))
+        r++;
+
+    // Initialize all hamming code bits
+    int total = m + r;
+    j = 1; // data bit index
+
+    for (i = 1; i <= total; i++) {
+        if (pow(2, k) == i) {
+            hcode[i] = -1; // placeholder for parity bits
+            k++;
+        } else {
+            hcode[i] = data[j];
+            j++;
+        }
+    }
+
+    // Calculate parity bits (even parity)
+    for (i = 0; i < r; i++) {
+        pos = pow(2, i);
+        parity = 0;
+
+        for (j = pos; j <= total; j += pos * 2) {
+            for (k = j; (k < j + pos) && (k <= total); k++) {
+                if (hcode[k] == 1)
+                    parity++;
+            }
+        }
+        hcode[pos] = parity % 2;  // even parity
+    }
+
+    // Display Hamming Code
+    printf("\nGenerated Hamming Code: ");
+    for (i = total; i >= 1; i--)  // MSB first
+        printf("%d ", hcode[i]);
+
+    // ----- Error Detection & Correction -----
+
+    printf("\n\nEnter received Hamming code (%d bits): ", total);
+    int recv[20];
+    for (i = total; i >= 1; i--)
+        scanf("%d", &recv[i]);
+
+    // Detect error position
+    for (i = 0; i < r; i++) {
+        pos = pow(2, i);
+        parity = 0;
+
+        for (j = pos; j <= total; j += pos * 2) {
+            for (k = j; (k < j + pos) && (k <= total); k++) {
+                if (recv[k] == 1)
+                    parity++;
+            }
+        }
+
+        if (parity % 2 != 0)   // parity mismatch
+            error_pos += pos;
+    }
+
+    if (error_pos == 0) {
+        printf("\nNo error detected.\n");
+    } else {
+        printf("\nError detected at bit position: %d\n", error_pos);
+        recv[error_pos] = !recv[error_pos];  // correct the bit
+        printf("\nCorrected Code: ");
+        for (i = total; i >= 1; i--)
+            printf("%d ", recv[i]);
+        printf("\n");
+    }
+
+    return 0;
+}
