@@ -1,0 +1,49 @@
+#include <stdio.h>
+
+int main() {
+    int n, data[50], sum = 0, checksum, recv_sum = 0;
+
+    printf("Enter number of data bytes: ");
+    scanf("%d", &n);
+
+    printf("Enter the data bytes (in decimal):\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &data[i]);
+        sum += data[i];
+    }
+
+    // Perform wrap-around addition (1's complement addition)
+    while (sum > 255) {       // 8-bit checksum
+        sum = (sum & 255) + (sum >> 8);
+    }
+
+    checksum = 255 - sum;     // 1's complement
+
+    printf("\nSender Side:");
+    printf("\nChecksum = %d", checksum);
+
+    // Receiver side
+    printf("\n\nEnter received data bytes:\n");
+    recv_sum = 0;
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &data[i]);
+        recv_sum += data[i];
+    }
+
+    recv_sum += checksum;
+
+    while (recv_sum > 255) {
+        recv_sum = (recv_sum & 255) + (recv_sum >> 8);
+    }
+
+    recv_sum = 255 - recv_sum;
+
+    printf("\nReceiver Side:");
+
+    if (recv_sum == 0)
+        printf("\nData is correct (No error detected)\n");
+    else
+        printf("\nError detected during transmission\n");
+
+    return 0;
+}
