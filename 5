@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <string.h>
+
+// Function to perform CRC division
+void computeCRC(char data[], char poly[], char crc[]) {
+    int data_len = strlen(data);
+    int poly_len = strlen(poly);
+
+    char temp[300];
+    strcpy(temp, data);
+
+    // Append zeros
+    for (int i = 0; i < poly_len - 1; i++)
+        strcat(temp, "0");
+
+    char remainder[300];
+    strcpy(remainder, temp);
+
+    for (int i = 0; i <= strlen(temp) - poly_len; i++) {
+        if (remainder[i] == '1') {
+            for (int j = 0; j < poly_len; j++)
+                remainder[i + j] = remainder[i + j] == poly[j] ? '0' : '1';
+        }
+    }
+
+    // Copy last (poly_len - 1) bits as CRC
+    strncpy(crc, &remainder[strlen(remainder) - (poly_len - 1)], poly_len - 1);
+    crc[poly_len - 1] = '\0';
+}
+
+// Convert characters to binary bit string
+void charToBinary(char str[], char bin[]) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        unsigned char c = str[i];
+        for (int j = 7; j >= 0; j--) {
+            bin[strlen(str) * 8 - 8 + i * 8 + (7 - j)] = (c & (1 << j)) ? '1' : '0';
+        }
+    }
+}
+
+int main() {
+    char input[100];
+    char bin[800] = "";
+    char crc12[20], crc16[20], crcCCITT[20];
+
+    // CRC polynomials in binary
+    char poly12[] =  "1100000001111";       // CRC-12 (x^12 + x^11 + x^3 + x^2 + x + 1)
+    char poly16[] =  "11000000000000101";   // CRC-16 (x^16 + x^15 + x^2 + 1)
+    char polyCC[] =  "10001000000100001";   // CRC-CCITT (x^16 + x^12 + x^5 + 1)
+
+    printf("Enter input data (characters): ");
+    scanf("%[^\n]", input);
+
+    // Convert characters to bitstream
+    for (int i = 0; input[i] != '\0'; i++) {
+        unsigned char c = input[i];
+        for (int j = 7; j >= 0; j--)
+            bin[strlen(bin)] = (c & (1 << j)) ? '1' : '0';
+    }
+
+    printf("\nBitstream: %s\n", bin);
+
+    computeCRC(bin, poly12, crc12);
+    computeCRC(bin, poly16, crc16);
+    computeCRC(bin, polyCC, crcCCITT);
+
+    printf("\n----- CRC Results -----\n");
+    printf("CRC-12   : %s\n", crc12);
+    printf("CRC-16   : %s\n", crc16);
+    printf("CRC-CCITT: %s\n", crcCCITT);
+
+    return 0;
+}
