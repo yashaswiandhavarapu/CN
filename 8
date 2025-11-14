@@ -1,0 +1,30 @@
+#include <stdio.h>
+
+int main() {
+    int totalFrames, lostFrame;
+
+    printf("Enter total number of frames to send: ");
+    scanf("%d", &totalFrames);
+
+    printf("Enter a frame number to simulate loss (0 for no loss): ");
+    scanf("%d", &lostFrame);
+
+    printf("\n--- Stop and Wait Protocol Simulation ---\n");
+
+    for (int i = 1; i <= totalFrames; i++) {
+
+        printf("\nSender: Sending Frame %d...", i);
+
+        if (i == lostFrame) {
+            printf("\n❌ Frame %d lost! No ACK received.", i);
+            printf("\n🔁 Retransmitting Frame %d...", i);
+            printf("\n✔ ACK received for Frame %d", i);
+        } else {
+            printf("\n✔ Frame %d received successfully.", i);
+            printf("\n✔ ACK received for Frame %d", i);
+        }
+    }
+
+    printf("\n\nAll frames sent successfully!\n");
+    return 0;
+}
