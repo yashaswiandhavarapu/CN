@@ -1,0 +1,29 @@
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char data[100], stuffed[200] = "";
+    char FLAG[] = "FLAG";
+    char ESC[] = "ESC";
+
+    printf("Enter data for Character Stuffing: ");
+    scanf("%s", data);
+
+    // Add starting FLAG
+    strcat(stuffed, FLAG);
+
+    // Perform character stuffing
+    for (int i = 0; i < strlen(data); i++) {
+        if (data[i] == 'F' || data[i] == 'E') {
+            strcat(stuffed, ESC);   // Insert ESC before special character
+        }
+        strncat(stuffed, &data[i], 1);
+    }
+
+    // Add ending FLAG
+    strcat(stuffed, FLAG);
+
+    printf("\nStuffed Data: %s\n", stuffed);
+
+    return 0;
+}
