@@ -1,0 +1,49 @@
+#include <stdio.h>
+
+int main() {
+    int windowSize, totalFrames, lostFrame;
+
+    printf("Enter total number of frames to send: ");
+    scanf("%d", &totalFrames);
+
+    printf("Enter window size: ");
+    scanf("%d", &windowSize);
+
+    printf("Enter a frame number to simulate loss (0 for no loss): ");
+    scanf("%d", &lostFrame);
+
+    int i = 1;
+    while (i <= totalFrames) {
+
+        printf("\nSender: Sending frames: ");
+        for (int j = i; j < i + windowSize && j <= totalFrames; j++) {
+            printf("%d ", j);
+        }
+
+        printf("\nReceiver: ");
+
+        int ackFlag = 1;
+
+        for (int j = i; j < i + windowSize && j <= totalFrames; j++) {
+
+            if (j == lostFrame) {
+                printf("\n❌ Frame %d lost! No ACK sent.", j);
+                ackFlag = 0;
+                break;
+            } else {
+                printf("\n✔ ACK received for Frame %d", j);
+            }
+        }
+
+        if (ackFlag == 0) {
+            printf("\n\n⚠ Go-Back-N activated!");
+            printf("\nResending frames starting from %d\n", lostFrame);
+            i = lostFrame;   // retransmit from lost frame
+        } else {
+            i += windowSize; // move window forward
+        }
+    }
+
+    printf("\n\nAll frames sent successfully!\n");
+    return 0;
+}
