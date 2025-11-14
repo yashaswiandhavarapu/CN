@@ -1,0 +1,57 @@
+#include <stdio.h>
+
+int main() {
+    int bucketSize, outputRate, n;
+
+    printf("Enter bucket size (capacity): ");
+    scanf("%d", &bucketSize);
+
+    printf("Enter output rate (packets per second): ");
+    scanf("%d", &outputRate);
+
+    printf("Enter number of incoming packet groups: ");
+    scanf("%d", &n);
+
+    int bucketContent = 0;
+
+    for (int i = 1; i <= n; i++) {
+        int incoming;
+        printf("\nEnter number of packets arriving at time %d: ", i);
+        scanf("%d", &incoming);
+
+        printf("Incoming: %d packets\n", incoming);
+
+        if (bucketContent + incoming > bucketSize) {
+            int dropped = (bucketContent + incoming) - bucketSize;
+            printf("❌ Bucket Overflow! Dropped %d packets\n", dropped);
+            bucketContent = bucketSize;  // bucket full
+        } else {
+            bucketContent += incoming;
+        }
+
+        printf("Bucket content before leaking: %d\n", bucketContent);
+
+        // Leak packets at output rate
+        if (bucketContent >= outputRate) {
+            bucketContent -= outputRate;
+        } else {
+            bucketContent = 0;
+        }
+
+        printf("Bucket content after leaking: %d\n", bucketContent);
+    }
+
+    // Empty remaining packets in bucket
+    while (bucketContent > 0) {
+        printf("\nLeaking remaining packets...\n");
+        if (bucketContent >= outputRate)
+            bucketContent -= outputRate;
+        else
+            bucketContent = 0;
+
+        printf("Remaining bucket content: %d\n", bucketContent);
+    }
+
+    printf("\nAll packets processed successfully!\n");
+    return 0;
+}
